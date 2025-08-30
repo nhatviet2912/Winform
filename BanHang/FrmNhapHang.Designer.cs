@@ -64,15 +64,15 @@
             // 
             // txtMaPhieu
             // 
-            txtMaPhieu.Location = new Point(100, 17);
+            txtMaPhieu.Location = new Point(142, 16);
             txtMaPhieu.Name = "txtMaPhieu";
-            txtMaPhieu.Size = new Size(150, 27);
+            txtMaPhieu.Size = new Size(202, 27);
             txtMaPhieu.TabIndex = 1;
             // 
             // lblNgayNhap
             // 
             lblNgayNhap.AutoSize = true;
-            lblNgayNhap.Location = new Point(280, 20);
+            lblNgayNhap.Location = new Point(350, 19);
             lblNgayNhap.Name = "lblNgayNhap";
             lblNgayNhap.Size = new Size(84, 20);
             lblNgayNhap.TabIndex = 2;
@@ -80,7 +80,7 @@
             // 
             // dtpNgayNhap
             // 
-            dtpNgayNhap.Location = new Point(360, 17);
+            dtpNgayNhap.Location = new Point(460, 19);
             dtpNgayNhap.Name = "dtpNgayNhap";
             dtpNgayNhap.Size = new Size(200, 27);
             dtpNgayNhap.TabIndex = 3;
@@ -96,9 +96,9 @@
             // 
             // txtNhaCungCap
             // 
-            txtNhaCungCap.Location = new Point(120, 52);
+            txtNhaCungCap.Location = new Point(142, 49);
             txtNhaCungCap.Name = "txtNhaCungCap";
-            txtNhaCungCap.Size = new Size(440, 27);
+            txtNhaCungCap.Size = new Size(518, 27);
             txtNhaCungCap.TabIndex = 5;
             // 
             // lblNhanVienNhap
@@ -112,7 +112,7 @@
             // 
             // txtNhanVienNhap
             // 
-            txtNhanVienNhap.Location = new Point(120, 87);
+            txtNhanVienNhap.Location = new Point(144, 87);
             txtNhanVienNhap.Name = "txtNhanVienNhap";
             txtNhanVienNhap.Size = new Size(200, 27);
             txtNhanVienNhap.TabIndex = 7;
@@ -128,10 +128,10 @@
             // 
             // txtTongTien
             // 
-            txtTongTien.Location = new Point(420, 87);
+            txtTongTien.Location = new Point(460, 87);
             txtTongTien.Name = "txtTongTien";
             txtTongTien.ReadOnly = true;
-            txtTongTien.Size = new Size(140, 27);
+            txtTongTien.Size = new Size(200, 27);
             txtTongTien.TabIndex = 9;
             txtTongTien.Text = "0";
             // 
@@ -146,10 +146,10 @@
             // 
             // txtGhiChu
             // 
-            txtGhiChu.Location = new Point(120, 122);
+            txtGhiChu.Location = new Point(142, 122);
             txtGhiChu.Multiline = true;
             txtGhiChu.Name = "txtGhiChu";
-            txtGhiChu.Size = new Size(440, 40);
+            txtGhiChu.Size = new Size(518, 40);
             txtGhiChu.TabIndex = 11;
             // 
             // dgvChiTiet
@@ -207,7 +207,7 @@
             // 
             // FrmNhapHang
             // 
-            ClientSize = new Size(700, 470);
+            ClientSize = new Size(700, 553);
             Controls.Add(lblMaPhieu);
             Controls.Add(txtMaPhieu);
             Controls.Add(lblNgayNhap);

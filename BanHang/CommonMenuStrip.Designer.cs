@@ -72,6 +72,7 @@
             cutToolStripMenuItem.ShowShortcutKeys = false;
             cutToolStripMenuItem.Size = new Size(224, 26);
             cutToolStripMenuItem.Text = "Bán Hàng";
+            cutToolStripMenuItem.Click += cutToolStripMenuItem_Click;
             // 
             // pasteToolStripMenuItem
             // 
@@ -94,40 +95,40 @@
             refreshToolStripMenuItem.Name = "refreshToolStripMenuItem";
             refreshToolStripMenuItem.ShortcutKeys = Keys.F5;
             refreshToolStripMenuItem.ShowShortcutKeys = false;
-            refreshToolStripMenuItem.Size = new Size(224, 26);
+            refreshToolStripMenuItem.Size = new Size(192, 26);
             refreshToolStripMenuItem.Text = "Loại Sản Phẩm";
             refreshToolStripMenuItem.Click += refreshToolStripMenuItem_Click;
             // 
             // sảnPhẩmToolStripMenuItem
             // 
             sảnPhẩmToolStripMenuItem.Name = "sảnPhẩmToolStripMenuItem";
-            sảnPhẩmToolStripMenuItem.Size = new Size(224, 26);
+            sảnPhẩmToolStripMenuItem.Size = new Size(192, 26);
             sảnPhẩmToolStripMenuItem.Text = "Sản Phẩm";
             sảnPhẩmToolStripMenuItem.Click += sảnPhẩmToolStripMenuItem_Click;
             // 
             // kháchHàngToolStripMenuItem
             // 
             kháchHàngToolStripMenuItem.Name = "kháchHàngToolStripMenuItem";
-            kháchHàngToolStripMenuItem.Size = new Size(224, 26);
+            kháchHàngToolStripMenuItem.Size = new Size(192, 26);
             kháchHàngToolStripMenuItem.Text = "Khách Hàng";
             kháchHàngToolStripMenuItem.Click += kháchHàngToolStripMenuItem_Click;
             // 
             // khoHàngToolStripMenuItem
             // 
             khoHàngToolStripMenuItem.Name = "khoHàngToolStripMenuItem";
-            khoHàngToolStripMenuItem.Size = new Size(224, 26);
+            khoHàngToolStripMenuItem.Size = new Size(192, 26);
             khoHàngToolStripMenuItem.Text = "Kho Hàng";
             // 
             // hóaĐơnNhậpToolStripMenuItem
             // 
             hóaĐơnNhậpToolStripMenuItem.Name = "hóaĐơnNhậpToolStripMenuItem";
-            hóaĐơnNhậpToolStripMenuItem.Size = new Size(224, 26);
+            hóaĐơnNhậpToolStripMenuItem.Size = new Size(192, 26);
             hóaĐơnNhậpToolStripMenuItem.Text = "Hóa Đơn Nhập";
             // 
             // hóaĐơnBánToolStripMenuItem
             // 
             hóaĐơnBánToolStripMenuItem.Name = "hóaĐơnBánToolStripMenuItem";
-            hóaĐơnBánToolStripMenuItem.Size = new Size(224, 26);
+            hóaĐơnBánToolStripMenuItem.Size = new Size(192, 26);
             hóaĐơnBánToolStripMenuItem.Text = "Hóa Đơn Bán";
             // 
             // helpToolStripMenuItem

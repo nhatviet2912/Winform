@@ -1,7 +1,11 @@
+﻿using System.Diagnostics;
+
 namespace BanHang
 {
     internal static class Program
     {
+        private static Process backgroundProcess;
+
         /// <summary>
         ///  The main entry point for the application.
         /// </summary>
@@ -12,8 +16,25 @@ namespace BanHang
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
             DatabaseHelper.InitDatabase();
-            Application.Run(new FrmLogin());
-            Application.Exit();
+            FrmLogin loginForm = new FrmLogin();
+            Application.Run(loginForm);
+            if (loginForm.IsDisposed) // Kiểm tra nếu form đã đóng
+            {
+                // Dừng các process ngầm (nếu có)
+                StopBackgroundProcesses();
+
+                // Thoát ứng dụng
+                Application.Exit();
+            }
+        }
+
+        private static void StopBackgroundProcesses()
+        {
+            // Giả sử bạn đang chạy một process nền
+            if (backgroundProcess != null && !backgroundProcess.HasExited)
+            {
+                backgroundProcess.Kill(); // Dừng process
+            }
         }
     }
 }

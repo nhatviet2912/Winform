@@ -194,7 +194,7 @@
             // 
             // FrmKhachHang
             // 
-            ClientSize = new Size(650, 480);
+            ClientSize = new Size(650, 553);
             Controls.Add(lblMaCode);
             Controls.Add(txtMaCode);
             Controls.Add(lblTenKH);

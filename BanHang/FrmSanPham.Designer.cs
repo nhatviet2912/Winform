@@ -208,7 +208,7 @@
             // 
             // FrmSanPham
             // 
-            ClientSize = new Size(830, 550);
+            ClientSize = new Size(830, 603);
             Controls.Add(btnXoa);
             Controls.Add(btnSua);
             Controls.Add(btnThem);

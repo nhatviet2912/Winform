@@ -25,10 +25,18 @@
             Form currentForm = this.FindForm();
             if (currentForm != null)
             {
+                // Ẩn form hiện tại
                 currentForm.Hide();
+
+                // Tạo form mới và mở dưới dạng hộp thoại modal
                 FrmLoaiSanPham frmLoaiSanPham = new FrmLoaiSanPham();
                 frmLoaiSanPham.ShowDialog();
-                currentForm.Close(); // Đóng form cũ sau khi form mới đóng
+
+                // Đảm bảo form hiện tại sẽ bị đóng sau khi form mới đóng
+                if (!currentForm.IsDisposed)
+                {
+                    currentForm.Close();
+                }
             }
         }
 
@@ -37,10 +45,18 @@
             Form currentForm = this.FindForm();
             if (currentForm != null)
             {
+                // Ẩn form hiện tại
                 currentForm.Hide();
+
+                // Tạo form mới và mở dưới dạng hộp thoại modal
                 FrmSanPham frmSanPham = new FrmSanPham();
                 frmSanPham.ShowDialog();
-                currentForm.Close();
+
+                // Đảm bảo form hiện tại sẽ bị đóng sau khi form mới đóng
+                if (!currentForm.IsDisposed)
+                {
+                    currentForm.Close();
+                }
             }
         }
 
@@ -49,10 +65,18 @@
             Form currentForm = this.FindForm();
             if (currentForm != null)
             {
+                // Ẩn form hiện tại
                 currentForm.Hide();
+
+                // Tạo form mới và mở dưới dạng hộp thoại modal
                 FrmKhachHang frmKhachHang = new FrmKhachHang();
                 frmKhachHang.ShowDialog();
-                currentForm.Close();
+
+                // Đảm bảo form hiện tại sẽ bị đóng sau khi form mới đóng
+                if (!currentForm.IsDisposed)
+                {
+                    currentForm.Close();
+                }
             }
         }
 
@@ -61,10 +85,38 @@
             Form currentForm = this.FindForm();
             if (currentForm != null)
             {
+                // Ẩn form hiện tại
                 currentForm.Hide();
+
+                // Tạo form mới và mở dưới dạng hộp thoại modal
                 FrmNhapHang frmNhapHang = new FrmNhapHang();
                 frmNhapHang.ShowDialog();
-                currentForm.Close();
+
+                // Đảm bảo form hiện tại sẽ bị đóng sau khi form mới đóng
+                if (!currentForm.IsDisposed)
+                {
+                    currentForm.Close();
+                }
+            }
+        }
+
+        private void cutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form currentForm = this.FindForm();
+            if (currentForm != null)
+            {
+                // Ẩn form hiện tại
+                currentForm.Hide();
+
+                // Tạo form mới và mở dưới dạng hộp thoại modal
+                FrmBanHang frmBanHang = new FrmBanHang();
+                frmBanHang.ShowDialog();
+
+                // Đảm bảo form hiện tại sẽ bị đóng sau khi form mới đóng
+                if (!currentForm.IsDisposed)
+                {
+                    currentForm.Close();
+                }
             }
         }
     }
