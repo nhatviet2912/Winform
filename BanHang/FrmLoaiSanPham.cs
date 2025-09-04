@@ -9,13 +9,24 @@ namespace BanHang
 
         private CommonMenuStrip commonMenu;
         private TableLayoutPanel tableLayout;
+        bool isLoading = false;
 
         public FrmLoaiSanPham()
         {
             InitializeComponent();
             InitializeCommonMenu();
             SetupTableLayout();
+            this.Load += FrmLoaiSanPham_Load;
+            this.btnThem.Click += btnThem_Click;
+            this.btnSua.Click += btnSua_Click;
+            this.btnXoa.Click += btnXoa_Click;
+        }
+
+        private void FrmLoaiSanPham_Load(object sender, EventArgs e)
+        {
             LoadData();
+            if (dgvLoaiSP.Columns["Id"] != null)
+                dgvLoaiSP.Columns["Id"].Visible = false;
         }
         private void SetupTableLayout()
         {
@@ -53,6 +64,11 @@ namespace BanHang
             this.Controls.Add(tableLayout);
         }
 
+        private void ClearInput ()
+        {
+            txtTenLoai.Clear();
+            txtMoTa.Clear();
+        }
 
         private void InitializeCommonMenu()
         {
@@ -81,8 +97,9 @@ namespace BanHang
             }
         }
 
-        private void btnThem_Click(object sender, EventArgs e)
+        private void btnThem_Click(object sender, EventArgs e)  
         {
+            if (!ValidateInput()) return;
             try
             {
                 using (var conn = DatabaseHelper.GetConnection())
@@ -95,6 +112,7 @@ namespace BanHang
                 }
 
                 LoadData();
+                ClearInput();
             }
             catch (Exception ex)
             {
@@ -104,6 +122,7 @@ namespace BanHang
 
         private void btnSua_Click(object sender, EventArgs e)
         {
+            if (!ValidateInput()) return;
             if (dgvLoaiSP.CurrentRow != null)
             {
                 int id = Convert.ToInt32(dgvLoaiSP.CurrentRow.Cells["Id"].Value);
@@ -123,6 +142,7 @@ namespace BanHang
                     }
 
                     LoadData();
+                    ClearInput();
                 }
                 catch (Exception ex)
                 {
@@ -148,6 +168,7 @@ namespace BanHang
                     }
 
                     LoadData();
+                    ClearInput();
                 }
                 catch (Exception ex)
                 {
@@ -156,13 +177,27 @@ namespace BanHang
             }
         }
 
-        private void dgvLoaiSanPham_SelectionChanged(object sender, EventArgs e)
+        private void dgvLoaiSP_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (dgvLoaiSP.CurrentRow != null)
-            {
-                txtTenLoai.Text = dgvLoaiSP.CurrentRow.Cells["TenLoai"].Value?.ToString();
-                txtMoTa.Text = dgvLoaiSP.CurrentRow.Cells["MoTa"].Value?.ToString();
-            }
+            if (e.RowIndex >= 0) { 
+                var row = dgvLoaiSP.Rows[e.RowIndex]; 
+                txtTenLoai.Text = Convert.ToString(row.Cells["TenLoai"].Value); 
+                txtMoTa.Text = Convert.ToString(row.Cells["MoTa"].Value); 
+            } 
         }
+
+        private bool ValidateInput()
+        {
+            // Kiểm tra Tên loại
+            if (string.IsNullOrWhiteSpace(txtTenLoai.Text))
+            {
+                MessageBox.Show("Vui lòng nhập Tên loại!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtTenLoai.Focus();
+                return false;
+            }
+
+            return true;
+        }
+
     }
 }

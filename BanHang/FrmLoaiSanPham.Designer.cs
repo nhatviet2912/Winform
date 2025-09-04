@@ -35,6 +35,7 @@
             dgvLoaiSP.RowTemplate.Height = 24;
             dgvLoaiSP.Size = new Size(800, 250);
             dgvLoaiSP.TabIndex = 0;
+            dgvLoaiSP.CellClick += dgvLoaiSP_CellClick;
             // 
             // lblTenLoai
             // 
