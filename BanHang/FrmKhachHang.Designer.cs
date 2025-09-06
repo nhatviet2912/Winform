@@ -19,7 +19,6 @@
         private System.Windows.Forms.Button btnThem;
         private System.Windows.Forms.Button btnSua;
         private System.Windows.Forms.Button btnXoa;
-        private System.Windows.Forms.Button btnLamMoi;
 
         protected override void Dispose(bool disposing)
         {
@@ -48,7 +47,6 @@
             btnThem = new Button();
             btnSua = new Button();
             btnXoa = new Button();
-            btnLamMoi = new Button();
             ((System.ComponentModel.ISupportInitialize)dgvKhachHang).BeginInit();
             SuspendLayout();
             // 
@@ -56,17 +54,17 @@
             // 
             lblMaCode.Location = new Point(20, 30);
             lblMaCode.Name = "lblMaCode";
-            lblMaCode.Size = new Size(100, 23);
+            lblMaCode.Size = new Size(134, 23);
             lblMaCode.TabIndex = 0;
-            lblMaCode.Text = "Mã KH:";
+            lblMaCode.Text = "Mã Khách Hàng:";
             // 
             // lblTenKH
             // 
             lblTenKH.Location = new Point(20, 65);
             lblTenKH.Name = "lblTenKH";
-            lblTenKH.Size = new Size(100, 23);
+            lblTenKH.Size = new Size(134, 23);
             lblTenKH.TabIndex = 2;
-            lblTenKH.Text = "Tên KH:";
+            lblTenKH.Text = "Tên Khách Hàng:";
             // 
             // lblDiaChi
             // 
@@ -102,51 +100,50 @@
             // 
             // txtMaCode
             // 
-            txtMaCode.Location = new Point(120, 25);
+            txtMaCode.Location = new Point(186, 26);
             txtMaCode.Name = "txtMaCode";
-            txtMaCode.Size = new Size(200, 27);
+            txtMaCode.Size = new Size(287, 27);
             txtMaCode.TabIndex = 1;
             // 
             // txtTenKH
             // 
-            txtTenKH.Location = new Point(120, 60);
+            txtTenKH.Location = new Point(186, 59);
             txtTenKH.Name = "txtTenKH";
-            txtTenKH.Size = new Size(200, 27);
+            txtTenKH.Size = new Size(287, 27);
             txtTenKH.TabIndex = 3;
             // 
             // txtDiaChi
             // 
-            txtDiaChi.Location = new Point(120, 95);
+            txtDiaChi.Location = new Point(186, 92);
             txtDiaChi.Name = "txtDiaChi";
-            txtDiaChi.Size = new Size(200, 27);
+            txtDiaChi.Size = new Size(287, 27);
             txtDiaChi.TabIndex = 5;
             // 
             // txtDienThoai
             // 
-            txtDienThoai.Location = new Point(120, 130);
+            txtDienThoai.Location = new Point(186, 125);
             txtDienThoai.Name = "txtDienThoai";
-            txtDienThoai.Size = new Size(200, 27);
+            txtDienThoai.Size = new Size(287, 27);
             txtDienThoai.TabIndex = 7;
             // 
             // txtEmail
             // 
-            txtEmail.Location = new Point(120, 165);
+            txtEmail.Location = new Point(186, 166);
             txtEmail.Name = "txtEmail";
-            txtEmail.Size = new Size(200, 27);
+            txtEmail.Size = new Size(287, 27);
             txtEmail.TabIndex = 9;
             // 
             // cbGioiTinh
             // 
             cbGioiTinh.Items.AddRange(new object[] { "Nam", "Nữ", "Khác" });
-            cbGioiTinh.Location = new Point(120, 200);
+            cbGioiTinh.Location = new Point(186, 202);
             cbGioiTinh.Name = "cbGioiTinh";
-            cbGioiTinh.Size = new Size(200, 28);
+            cbGioiTinh.Size = new Size(287, 28);
             cbGioiTinh.TabIndex = 11;
             // 
             // dgvKhachHang
             // 
-            dgvKhachHang.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            dgvKhachHang.ColumnHeadersHeight = 29;
+            dgvKhachHang.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dgvKhachHang.Location = new Point(20, 250);
             dgvKhachHang.MultiSelect = false;
             dgvKhachHang.Name = "dgvKhachHang";
@@ -163,7 +160,6 @@
             btnThem.Size = new Size(75, 28);
             btnThem.TabIndex = 12;
             btnThem.Text = "Thêm";
-            btnThem.Click += btnThem_Click;
             // 
             // btnSua
             // 
@@ -172,7 +168,6 @@
             btnSua.Size = new Size(75, 28);
             btnSua.TabIndex = 13;
             btnSua.Text = "Sửa";
-            btnSua.Click += btnSua_Click;
             // 
             // btnXoa
             // 
@@ -181,16 +176,6 @@
             btnXoa.Size = new Size(75, 28);
             btnXoa.TabIndex = 14;
             btnXoa.Text = "Xóa";
-            btnXoa.Click += btnXoa_Click;
-            // 
-            // btnLamMoi
-            // 
-            btnLamMoi.Location = new Point(545, 135);
-            btnLamMoi.Name = "btnLamMoi";
-            btnLamMoi.Size = new Size(75, 28);
-            btnLamMoi.TabIndex = 15;
-            btnLamMoi.Text = "Làm mới";
-            btnLamMoi.Click += btnLamMoi_Click;
             // 
             // FrmKhachHang
             // 
@@ -210,7 +195,6 @@
             Controls.Add(btnThem);
             Controls.Add(btnSua);
             Controls.Add(btnXoa);
-            Controls.Add(btnLamMoi);
             Controls.Add(dgvKhachHang);
             Name = "FrmKhachHang";
             Text = "Quản lý Khách Hàng";

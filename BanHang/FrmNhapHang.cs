@@ -67,7 +67,7 @@ namespace BanHang
 
         private void FrmNhapHang_Load(object sender, EventArgs e)
         {
-            dgvChiTiet.Columns.Add("SanPhamId", "Mã SP");
+            dgvChiTiet.Columns.Add("SanPhamId", "Mã Sản Phẩm");
             dgvChiTiet.Columns.Add("TenSP", "Tên sản phẩm");
             dgvChiTiet.Columns.Add("SoLuong", "Số lượng");
             dgvChiTiet.Columns.Add("DonGiaNhap", "Đơn giá");

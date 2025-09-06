@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using System.Data.SQLite;
+using System.Text.RegularExpressions;
 
 namespace BanHang
 {
@@ -15,6 +16,14 @@ namespace BanHang
             InitializeCommonMenu();
             SetupTableLayout();
             LoadData();
+            LoadGioiTinh();
+
+            this.btnThem.Click += btnThem_Click;
+            this.btnSua.Click += btnSua_Click;
+            this.btnXoa.Click += btnXoa_Click;
+
+            txtMaCode.ReadOnly = true;
+            txtMaCode.Text = GenerateMa();
         }
 
         private void SetupTableLayout()
@@ -73,6 +82,36 @@ namespace BanHang
                     dt = new DataTable();
                     adapter.Fill(dt);
                     dgvKhachHang.DataSource = dt;
+
+                    if (dgvKhachHang.Columns.Contains("Id"))
+                    {
+                        dgvKhachHang.Columns["Id"].Visible = false;
+                    }
+
+                    if (dgvKhachHang.Columns.Contains("TrangThai"))
+                    {
+                        dgvKhachHang.Columns["TrangThai"].Visible = false;
+                    }
+
+                    var columnHeaders = new Dictionary<string, string>
+                    {
+                        { "MaCode", "Mã Khách Hàng" },
+                        { "TenKhachHang", "Tên Khách Hàng" },
+                        { "DiaChi", "Địa Chỉ" },
+                        { "DienThoai", "Điện Thoại" },
+                        { "Email", "Email" },
+                        { "GioiTinh", "Giới Tính" },
+                        { "NgayTao", "Ngày Tạo" },
+                        { "NgayCapNhat", "Ngày Cập Nhật" }
+                    };
+
+                    SetColumnHeaders(dgvKhachHang, columnHeaders);
+
+                    if (dgvKhachHang.Columns.Contains("NgayTao"))
+                        dgvKhachHang.Columns["NgayTao"].DefaultCellStyle.Format = "dd/MM/yyyy";
+
+                    if (dgvKhachHang.Columns.Contains("NgayCapNhat"))
+                        dgvKhachHang.Columns["NgayCapNhat"].DefaultCellStyle.Format = "dd/MM/yyyy";
                 }
             }
             catch (Exception ex)
@@ -81,10 +120,59 @@ namespace BanHang
             }
         }
 
+        private void LoadGioiTinh()
+        {
+            var gioiTinhList = new List<KeyValuePair<int, string>>
+            {
+                new KeyValuePair<int, string>(0, ""),       // Rỗng
+                new KeyValuePair<int, string>(1, "Nam"),
+                new KeyValuePair<int, string>(2, "Nữ"),
+                new KeyValuePair<int, string>(3, "Khác")
+            };
+
+            cbGioiTinh.DataSource = gioiTinhList;
+            cbGioiTinh.DisplayMember = "Value";  // Hiển thị tên
+            cbGioiTinh.ValueMember = "Key";      // Giá trị thật
+        }
+
+        private void SetColumnHeaders(DataGridView dgv, Dictionary<string, string> headers)
+        {
+            foreach (var kvp in headers)
+            {
+                if (dgv.Columns.Contains(kvp.Key))
+                    dgv.Columns[kvp.Key].HeaderText = kvp.Value;
+            }
+        }
+
+        private string GenerateMa()
+        {
+            using (var conn = DatabaseHelper.GetConnection())
+            using (var cmd = new SQLiteCommand("SELECT MAX(MaCode) FROM KhachHang", conn))
+            {
+                object result = cmd.ExecuteScalar();
+
+                if (result != DBNull.Value && result != null)
+                {
+                    string lastCode = result.ToString(); // VD: "SP0005"
+                    string numberPart = new string(lastCode.SkipWhile(c => !char.IsDigit(c)).ToArray()); // lấy "0005"
+
+                    if (int.TryParse(numberPart, out int number))
+                    {
+                        int nextId = number + 1;
+                        return "KH" + nextId.ToString("D4"); // SP0006
+                    }
+                }
+
+                // Nếu chưa có dữ liệu thì trả về SP0001
+                return "KH0001";
+            }
+        }
+
         private void btnThem_Click(object sender, EventArgs e)
         {
             try
             {
+                if (!ValidateInput()) return;
                 string sql = "INSERT INTO KhachHang(MaCode, TenKhachHang, DiaChi, DienThoai, Email, GioiTinh) " +
                              "VALUES(@MaCode, @TenKhachHang, @DiaChi, @DienThoai, @Email, @GioiTinh)";
                 using (var conn = DatabaseHelper.GetConnection())
@@ -100,6 +188,7 @@ namespace BanHang
                 }
 
                 LoadData();
+                ClearInput();
             }
             catch (Exception ex)
             {
@@ -109,6 +198,7 @@ namespace BanHang
 
         private void btnSua_Click(object sender, EventArgs e)
         {
+            if (!ValidateInput()) return;
             if (dgvKhachHang.CurrentRow != null)
             {
                 int id = Convert.ToInt32(dgvKhachHang.CurrentRow.Cells["Id"].Value);
@@ -129,6 +219,7 @@ namespace BanHang
                     }
 
                     LoadData();
+                    ClearInput();
                 }
                 catch (Exception ex)
                 {
@@ -139,30 +230,40 @@ namespace BanHang
 
         private void btnXoa_Click(object sender, EventArgs e)
         {
-            if (dgvKhachHang.CurrentRow != null)
+            var result = MessageBox.Show(
+                "Bạn có chắc chắn muốn xóa khách hàng này không?",
+                "Xác nhận xóa",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question
+                );
+            if (result == DialogResult.Yes)
             {
-                int id = Convert.ToInt32(dgvKhachHang.CurrentRow.Cells["Id"].Value);
-                string sql = "DELETE FROM KhachHang WHERE Id=@Id";
-                try
+                if (dgvKhachHang.CurrentRow != null)
                 {
-                    using (var conn = DatabaseHelper.GetConnection())
-                    using (SQLiteCommand cmd = new SQLiteCommand(sql, conn))
+                    int id = Convert.ToInt32(dgvKhachHang.CurrentRow.Cells["Id"].Value);
+                    string sql = "DELETE FROM KhachHang WHERE Id=@Id";
+                    try
                     {
-                        cmd.Parameters.AddWithValue("@Id", id);
-                        cmd.ExecuteNonQuery();
-                        LoadData();
+                        using (var conn = DatabaseHelper.GetConnection())
+                        using (SQLiteCommand cmd = new SQLiteCommand(sql, conn))
+                        {
+                            cmd.Parameters.AddWithValue("@Id", id);
+                            cmd.ExecuteNonQuery();
+                            LoadData();
+                            ClearInput();
+                        }
                     }
-                }
-                catch (Exception ex) 
-                {
-                    MessageBox.Show("Lỗi khi sửa dữ liệu: " + ex.Message);
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Lỗi khi sửa dữ liệu: " + ex.Message);
+                    }
                 }
             }
         }
 
-        private void btnLamMoi_Click(object sender, EventArgs e)
+        private void ClearInput()
         {
-            txtMaCode.Clear();
+            txtMaCode.Text = GenerateMa();
             txtTenKH.Clear();
             txtDiaChi.Clear();
             txtDienThoai.Clear();
@@ -181,6 +282,57 @@ namespace BanHang
                 txtEmail.Text = dgvKhachHang.CurrentRow.Cells["Email"].Value.ToString();
                 cbGioiTinh.SelectedIndex = Convert.ToInt32(dgvKhachHang.CurrentRow.Cells["GioiTinh"].Value);
             }
+        }
+
+        private bool ValidateInput()
+        {
+            if (string.IsNullOrWhiteSpace(txtMaCode.Text))
+            {
+                MessageBox.Show("Vui lòng nhập mã sản phẩm!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(txtTenKH.Text))
+            {
+                MessageBox.Show("Vui lòng nhập tên khách hàng!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+
+            if (cbGioiTinh.SelectedValue == null || Convert.ToInt32(cbGioiTinh.SelectedValue) == 0)
+            {
+                MessageBox.Show("Vui lòng chọn giới tính!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(txtDiaChi.Text))
+            {
+                MessageBox.Show("Vui lòng nhập địa chỉ!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(txtDienThoai.Text))
+            {
+                MessageBox.Show("Vui lòng nhập số điện thoại!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(txtEmail.Text))
+            {
+                MessageBox.Show("Vui lòng nhập email!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+            else
+            {
+                // Regex cơ bản kiểm tra email
+                string pattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
+                if (!Regex.IsMatch(txtEmail.Text, pattern))
+                {
+                    MessageBox.Show("Email không đúng định dạng!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }

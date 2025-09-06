@@ -89,11 +89,36 @@ namespace BanHang
                     dt = new DataTable();
                     adapter.Fill(dt);
                     dgvLoaiSP.DataSource = dt;
+
+                    var columnHeaders = new Dictionary<string, string>
+                    {
+                        { "TenLoai", "Tên Loại" },
+                        { "MoTa", "Mô Tả" },
+                        { "NgayTao", "Ngày Tạo" },
+                        { "NgayCapNhat", "Ngày Cập Nhật" }
+                    };
+
+                    SetColumnHeaders(dgvLoaiSP, columnHeaders);
+
+                    if (dgvLoaiSP.Columns.Contains("NgayTao"))
+                        dgvLoaiSP.Columns["NgayTao"].DefaultCellStyle.Format = "dd/MM/yyyy";
+
+                    if (dgvLoaiSP.Columns.Contains("NgayCapNhat"))
+                        dgvLoaiSP.Columns["NgayCapNhat"].DefaultCellStyle.Format = "dd/MM/yyyy";
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Lỗi khi load dữ liệu: " + ex.Message);
+            }
+        }
+
+        private void SetColumnHeaders(DataGridView dgv, Dictionary<string, string> headers)
+        {
+            foreach (var kvp in headers)
+            {
+                if (dgv.Columns.Contains(kvp.Key))
+                    dgv.Columns[kvp.Key].HeaderText = kvp.Value;
             }
         }
 

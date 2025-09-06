@@ -47,19 +47,20 @@
             dgvSanPham.RowTemplate.Height = 24;
             dgvSanPham.Size = new Size(800, 250);
             dgvSanPham.TabIndex = 0;
+            dgvSanPham.CellClick += dgvSanPham_CellClick;
             // 
             // lblMaSP
             // 
             lblMaSP.AutoSize = true;
             lblMaSP.Location = new Point(12, 20);
             lblMaSP.Name = "lblMaSP";
-            lblMaSP.Size = new Size(101, 20);
+            lblMaSP.Size = new Size(115, 20);
             lblMaSP.TabIndex = 1;
-            lblMaSP.Text = "Mã sản phẩm:";
+            lblMaSP.Text = "Mã sản phẩm * :";
             // 
             // txtMaSP
             // 
-            txtMaSP.Location = new Point(120, 17);
+            txtMaSP.Location = new Point(133, 17);
             txtMaSP.Name = "txtMaSP";
             txtMaSP.Size = new Size(200, 27);
             txtMaSP.TabIndex = 2;
@@ -69,13 +70,13 @@
             lblTenSP.AutoSize = true;
             lblTenSP.Location = new Point(12, 55);
             lblTenSP.Name = "lblTenSP";
-            lblTenSP.Size = new Size(103, 20);
+            lblTenSP.Size = new Size(117, 20);
             lblTenSP.TabIndex = 3;
-            lblTenSP.Text = "Tên sản phẩm:";
+            lblTenSP.Text = "Tên sản phẩm * :";
             // 
             // txtTenSP
             // 
-            txtTenSP.Location = new Point(120, 52);
+            txtTenSP.Location = new Point(133, 52);
             txtTenSP.Name = "txtTenSP";
             txtTenSP.Size = new Size(200, 27);
             txtTenSP.TabIndex = 4;
@@ -91,7 +92,7 @@
             // 
             // txtMoTa
             // 
-            txtMoTa.Location = new Point(120, 87);
+            txtMoTa.Location = new Point(133, 87);
             txtMoTa.Multiline = true;
             txtMoTa.Name = "txtMoTa";
             txtMoTa.Size = new Size(200, 50);
@@ -102,16 +103,17 @@
             lblGia.AutoSize = true;
             lblGia.Location = new Point(12, 150);
             lblGia.Name = "lblGia";
-            lblGia.Size = new Size(63, 20);
+            lblGia.Size = new Size(77, 20);
             lblGia.TabIndex = 7;
-            lblGia.Text = "Giá bán:";
+            lblGia.Text = "Giá bán * :";
             // 
             // txtGia
             // 
-            txtGia.Location = new Point(120, 147);
+            txtGia.Location = new Point(133, 147);
             txtGia.Name = "txtGia";
             txtGia.Size = new Size(200, 27);
             txtGia.TabIndex = 8;
+            txtGia.TextChanged += txtGia_TextChanged;
             // 
             // lblDonViTinh
             // 
@@ -124,7 +126,7 @@
             // 
             // txtDonViTinh
             // 
-            txtDonViTinh.Location = new Point(120, 182);
+            txtDonViTinh.Location = new Point(133, 184);
             txtDonViTinh.Name = "txtDonViTinh";
             txtDonViTinh.Size = new Size(200, 27);
             txtDonViTinh.TabIndex = 10;
@@ -142,7 +144,7 @@
             // 
             cboLoaiSP.DropDownStyle = ComboBoxStyle.DropDownList;
             cboLoaiSP.FormattingEnabled = true;
-            cboLoaiSP.Location = new Point(120, 217);
+            cboLoaiSP.Location = new Point(133, 220);
             cboLoaiSP.Name = "cboLoaiSP";
             cboLoaiSP.Size = new Size(200, 28);
             cboLoaiSP.TabIndex = 12;
@@ -234,6 +236,11 @@
             ((System.ComponentModel.ISupportInitialize)dgvSanPham).EndInit();
             ResumeLayout(false);
             PerformLayout();
+        }
+
+        private void DgvSanPham_Click(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
         }
 
         private System.Windows.Forms.DataGridView dgvSanPham;
