@@ -4,7 +4,6 @@
     {
         private System.ComponentModel.IContainer components = null;
         private System.Windows.Forms.Label lblMaSP;
-        private System.Windows.Forms.TextBox txtMaSP;
         private System.Windows.Forms.Label lblTenSP;
         private System.Windows.Forms.TextBox txtTenSP;
         private System.Windows.Forms.Label lblSoLuong;
@@ -26,7 +25,6 @@
         private void InitializeComponent()
         {
             lblMaSP = new Label();
-            txtMaSP = new TextBox();
             lblTenSP = new Label();
             txtTenSP = new TextBox();
             lblSoLuong = new Label();
@@ -35,6 +33,7 @@
             txtDonGia = new TextBox();
             btnLuu = new Button();
             btnHuy = new Button();
+            cboMaSP = new ComboBox();
             SuspendLayout();
             // 
             // lblMaSP
@@ -45,13 +44,6 @@
             lblMaSP.Size = new Size(53, 20);
             lblMaSP.TabIndex = 0;
             lblMaSP.Text = "Mã SP:";
-            // 
-            // txtMaSP
-            // 
-            txtMaSP.Location = new Point(100, 20);
-            txtMaSP.Name = "txtMaSP";
-            txtMaSP.Size = new Size(200, 27);
-            txtMaSP.TabIndex = 1;
             // 
             // lblTenSP
             // 
@@ -100,6 +92,7 @@
             txtDonGia.Name = "txtDonGia";
             txtDonGia.Size = new Size(200, 27);
             txtDonGia.TabIndex = 7;
+            txtDonGia.TextChanged += txtGia_TextChanged;
             // 
             // btnLuu
             // 
@@ -119,11 +112,19 @@
             btnHuy.Text = "Hủy";
             btnHuy.Click += btnHuy_Click;
             // 
+            // cboMaSP
+            // 
+            cboMaSP.FormattingEnabled = true;
+            cboMaSP.Location = new Point(100, 20);
+            cboMaSP.Name = "cboMaSP";
+            cboMaSP.Size = new Size(200, 28);
+            cboMaSP.TabIndex = 10;
+            // 
             // FrmThemSanPham
             // 
             ClientSize = new Size(350, 230);
+            Controls.Add(cboMaSP);
             Controls.Add(lblMaSP);
-            Controls.Add(txtMaSP);
             Controls.Add(lblTenSP);
             Controls.Add(txtTenSP);
             Controls.Add(lblSoLuong);
@@ -137,5 +138,6 @@
             ResumeLayout(false);
             PerformLayout();
         }
+        private ComboBox cboMaSP;
     }
 }

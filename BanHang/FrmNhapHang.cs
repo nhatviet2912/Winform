@@ -1,7 +1,5 @@
-﻿using System;
-using System.Data;
+﻿using System.Data;
 using System.Data.SQLite;
-using System.Windows.Forms;
 
 namespace BanHang
 {
@@ -11,12 +9,17 @@ namespace BanHang
         private CommonMenuStrip commonMenu;
         private TableLayoutPanel tableLayout;
         private int currentPhieuNhapId = -1;
+        private string tongtien = "0";
 
         public FrmNhapHang()
         {
             InitializeComponent();
             InitializeCommonMenu();
             SetupTableLayout();
+
+            txtMaPhieu.ReadOnly = true;
+            txtMaPhieu.Text = GenerateMa();
+            dgvChiTiet.CellFormatting += dgvChiTiet_CellFormatting;
         }
 
         private void SetupTableLayout()
@@ -78,7 +81,7 @@ namespace BanHang
 
         private void btnThemSanPham_Click(object sender, EventArgs e)
         {
-            var frm = new FrmThemSanPham();
+            var frm = new FrmThemSanPham(true);
             if (frm.ShowDialog() == DialogResult.OK)
             {
                 string maSP = frm.MaSP;
@@ -93,6 +96,31 @@ namespace BanHang
             }
         }
 
+        private void dgvChiTiet_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            var colName = dgvChiTiet.Columns[e.ColumnIndex].Name;
+            if (colName == "DonGia" || colName == "ThanhTien")
+            {
+                if (e.Value == null || e.Value == DBNull.Value) return;
+
+                // Nếu giá trị đã là decimal
+                if (e.Value is decimal dec)
+                {
+                    e.Value = dec.ToString("N0") + " VNĐ";
+                    e.FormattingApplied = true;
+                }
+                else
+                {
+                    // thử parse nếu vô tình là string số
+                    if (decimal.TryParse(e.Value.ToString(), out decimal tmp))
+                    {
+                        e.Value = tmp.ToString("N0") + " VNĐ";
+                        e.FormattingApplied = true;
+                    }
+                }
+            }
+        }
+
         private void TinhTongTien()
         {
             decimal tong = 0;
@@ -100,18 +128,8 @@ namespace BanHang
             {
                 tong += Convert.ToDecimal(row.Cells["ThanhTien"].Value);
             }
-            txtTongTien.Text = tong.ToString("N0");
-        }
-
-        private void btnThemMoi_Click(object sender, EventArgs e)
-        {
-            currentPhieuNhapId = -1;
-            txtMaPhieu.Clear();
-            txtNhaCungCap.Clear();
-            txtNhanVienNhap.Clear();
-            txtGhiChu.Clear();
-            txtTongTien.Text = "0";
-            dgvChiTiet.Rows.Clear();
+            txtTongTien.Text = tong.ToString("N0") + " VNĐ";
+            tongtien = tong.ToString();
         }
 
         private void btnLuu_Click(object sender, EventArgs e)
@@ -138,11 +156,15 @@ namespace BanHang
                         foreach (DataGridViewRow row in dgvChiTiet.Rows)
                         {
                             if (row.IsNewRow) continue;
-                            InsertChiTietPhieuNhap(conn, row);
+                            var sanPhamId = InsertChiTietPhieuNhap(conn, row);
+                            int soLuong = Convert.ToInt32(row.Cells["SoLuong"].Value);
+                            UpdateTonKho(conn, sanPhamId, soLuong);
                         }
 
                         // Commit transaction nếu tất cả các thao tác thành công
                         trans.Commit();
+                        ClearInput();
+                        dgvChiTiet.Rows.Clear();
                         MessageBox.Show("Lưu phiếu nhập thành công!");
                     }
                     catch (Exception ex)
@@ -160,10 +182,23 @@ namespace BanHang
             }
         }
 
+        private void ClearInput()
+        {
+            currentPhieuNhapId = -1;
+            txtMaPhieu.Text = GenerateMa();
+            dtpNgayNhap.Value = DateTime.Now;
+            txtNhaCungCap.Clear();
+            txtNhanVienNhap.Clear();
+            txtTongTien.Text = "0";
+            txtGhiChu.Clear();
+            dgvChiTiet.Rows.Clear();
+        }
+
         private void InsertPhieuNhap(SQLiteConnection conn)
         {
             string sql = "INSERT INTO PhieuNhapKho (MaPhieu, NgayNhap, NhaCungCap, NhanVienNhap, TongTien, GhiChu) " +
-                         "VALUES (@MaPhieu, @NgayNhap, @NhaCungCap, @NhanVienNhap, @TongTien, @GhiChu); SELECT last_insert_rowid();";
+                         "VALUES (@MaPhieu, @NgayNhap, @NhaCungCap, @NhanVienNhap, @TongTien, @GhiChu); " +
+                         "SELECT last_insert_rowid();";
 
             using (SQLiteCommand cmd = new SQLiteCommand(sql, conn))
             {
@@ -171,10 +206,42 @@ namespace BanHang
                 cmd.Parameters.AddWithValue("@NgayNhap", dtpNgayNhap.Value);
                 cmd.Parameters.AddWithValue("@NhaCungCap", txtNhaCungCap.Text);
                 cmd.Parameters.AddWithValue("@NhanVienNhap", txtNhanVienNhap.Text);
-                cmd.Parameters.AddWithValue("@TongTien", Convert.ToDecimal(txtTongTien.Text));
+                cmd.Parameters.AddWithValue("@TongTien", Convert.ToDecimal(tongtien));
                 cmd.Parameters.AddWithValue("@GhiChu", txtGhiChu.Text);
 
                 currentPhieuNhapId = Convert.ToInt32(cmd.ExecuteScalar());
+            }
+        }
+
+        private void UpdateTonKho(SQLiteConnection conn, int sanPhamId, int soLuong)
+        {
+            // Kiểm tra đã có tồn kho cho sản phẩm chưa
+            string checkSql = "SELECT SoLuong FROM TonKho WHERE SanPhamId = @SanPhamId";
+            using (var checkCmd = new SQLiteCommand(checkSql, conn))
+            {
+                checkCmd.Parameters.AddWithValue("@SanPhamId", sanPhamId);
+                var result = checkCmd.ExecuteScalar();
+
+                if (result != null) // đã có -> update
+                {
+                    string updateSql = "UPDATE TonKho SET SoLuong = SoLuong + @SoLuong WHERE SanPhamId = @SanPhamId";
+                    using (var updateCmd = new SQLiteCommand(updateSql, conn))
+                    {
+                        updateCmd.Parameters.AddWithValue("@SoLuong", soLuong);
+                        updateCmd.Parameters.AddWithValue("@SanPhamId", sanPhamId);
+                        updateCmd.ExecuteNonQuery();
+                    }
+                }
+                else // chưa có -> insert mới
+                {
+                    string insertSql = "INSERT INTO TonKho (SanPhamId, SoLuong) VALUES (@SanPhamId, @SoLuong)";
+                    using (var insertCmd = new SQLiteCommand(insertSql, conn))
+                    {
+                        insertCmd.Parameters.AddWithValue("@SanPhamId", sanPhamId);
+                        insertCmd.Parameters.AddWithValue("@SoLuong", soLuong);
+                        insertCmd.ExecuteNonQuery();
+                    }
+                }
             }
         }
 
@@ -190,7 +257,7 @@ namespace BanHang
                 cmd.Parameters.AddWithValue("@NgayNhap", dtpNgayNhap.Value);
                 cmd.Parameters.AddWithValue("@NhaCungCap", txtNhaCungCap.Text);
                 cmd.Parameters.AddWithValue("@NhanVienNhap", txtNhanVienNhap.Text);
-                cmd.Parameters.AddWithValue("@TongTien", Convert.ToDecimal(txtTongTien.Text));
+                cmd.Parameters.AddWithValue("@TongTien", Convert.ToDecimal(tongtien));
                 cmd.Parameters.AddWithValue("@GhiChu", txtGhiChu.Text);
                 cmd.Parameters.AddWithValue("@Id", currentPhieuNhapId);
                 cmd.ExecuteNonQuery();
@@ -207,63 +274,52 @@ namespace BanHang
             }
         }
 
-        private void InsertChiTietPhieuNhap(SQLiteConnection conn, DataGridViewRow row)
+        private int InsertChiTietPhieuNhap(SQLiteConnection conn, DataGridViewRow row)
         {
+            string maSP = row.Cells["SanPhamId"].Value?.ToString();
+
+            if (string.IsNullOrEmpty(maSP))
+                throw new Exception("Mã sản phẩm không được để trống");
+
+            // Query lấy SanPhamId theo MaSP
+            int sanPhamId;
+            string sqlGetId = "SELECT Id FROM SanPham WHERE MaSanPham = @MaSP LIMIT 1";
+            using (SQLiteCommand cmdGet = new SQLiteCommand(sqlGetId, conn))
+            {
+                cmdGet.Parameters.AddWithValue("@MaSP", maSP);
+                object result = cmdGet.ExecuteScalar();
+                if (result == null)
+                    throw new Exception($"Không tìm thấy sản phẩm với mã: {maSP}");
+                sanPhamId = Convert.ToInt32(result);
+            }
             string sql = "INSERT INTO ChiTietPhieuNhap (PhieuNhapKhoId, SanPhamId, SoLuong, DonGiaNhap) " +
                          "VALUES (@PhieuNhapKhoId, @SanPhamId, @SoLuong, @DonGiaNhap)";
 
             using (SQLiteCommand cmd = new SQLiteCommand(sql, conn))
             {
                 cmd.Parameters.AddWithValue("@PhieuNhapKhoId", currentPhieuNhapId);
-                cmd.Parameters.AddWithValue("@SanPhamId", Convert.ToInt32(row.Cells["SanPhamId"].Value));
+                cmd.Parameters.AddWithValue("@SanPhamId", sanPhamId);
                 cmd.Parameters.AddWithValue("@SoLuong", Convert.ToInt32(row.Cells["SoLuong"].Value));
                 cmd.Parameters.AddWithValue("@DonGiaNhap", Convert.ToDecimal(row.Cells["DonGiaNhap"].Value));
                 cmd.ExecuteNonQuery();
             }
+
+            return sanPhamId;
         }
 
 
         private void btnXoa_Click(object sender, EventArgs e)
         {
-            if (currentPhieuNhapId == -1)
-            {
-                MessageBox.Show("Chưa có phiếu nhập để xóa!");
-                return;
-            }
+            if (dgvChiTiet.CurrentRow == null) return;
 
-            var result = MessageBox.Show("Bạn có chắc chắn muốn xóa phiếu nhập này?", "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            var result = MessageBox.Show("Bạn có chắc chắn muốn xóa sản phẩm này không?", "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
 
             if (result == DialogResult.Yes)
             {
                 try
                 {
-                    using (var conn = DatabaseHelper.GetConnection())  // Sử dụng DatabaseHelper để lấy kết nối
-                    {
-                        using (SQLiteTransaction trans = conn.BeginTransaction())
-                        {
-                            try
-                            {
-                                // Xóa chi tiết phiếu nhập
-                                DeleteChiTietPhieuNhap(conn);
-
-                                // Xóa phiếu nhập
-                                DeletePhieuNhap(conn);
-
-                                // Commit transaction nếu không có lỗi
-                                trans.Commit();
-                                MessageBox.Show("Đã xóa phiếu nhập thành công!");
-
-                                // Thực hiện hành động thêm mới sau khi xóa
-                                btnThemMoi_Click(sender, e);
-                            }
-                            catch (Exception ex)
-                            {
-                                // Rollback nếu có lỗi trong transaction
-                                trans.Rollback();
-                                MessageBox.Show("Lỗi khi xóa: " + ex.Message);
-                            }
-                        }
-                    }
+                    dgvChiTiet.Rows.RemoveAt(dgvChiTiet.CurrentRow.Index);
+                    TinhTongTien();
                 }
                 catch (Exception ex)
                 {
@@ -272,19 +328,33 @@ namespace BanHang
             }
         }
 
-        private void DeletePhieuNhap(SQLiteConnection conn)
-        {
-            string sql = "DELETE FROM PhieuNhapKho WHERE Id=@Id";
-            using (SQLiteCommand cmd = new SQLiteCommand(sql, conn))
-            {
-                cmd.Parameters.AddWithValue("@Id", currentPhieuNhapId);
-                cmd.ExecuteNonQuery();
-            }
-        }
-
         private void btnThoat_Click(object sender, EventArgs e)
         {
             Application.Exit();
+        }
+
+        private string GenerateMa()
+        {
+            using (var conn = DatabaseHelper.GetConnection())
+            using (var cmd = new SQLiteCommand("SELECT MAX(MaPhieu) FROM PhieuNhapKho", conn))
+            {
+                object result = cmd.ExecuteScalar();
+
+                if (result != DBNull.Value && result != null)
+                {
+                    string lastCode = result.ToString(); // VD: "SP0005"
+                    string numberPart = new string(lastCode.SkipWhile(c => !char.IsDigit(c)).ToArray()); // lấy "0005"
+
+                    if (int.TryParse(numberPart, out int number))
+                    {
+                        int nextId = number + 1;
+                        return "MP" + nextId.ToString("D4"); // SP0006
+                    }
+                }
+
+                // Nếu chưa có dữ liệu thì trả về SP0001
+                return "MP0001";
+            }
         }
     }
 }

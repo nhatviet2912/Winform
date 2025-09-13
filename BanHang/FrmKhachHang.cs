@@ -72,28 +72,38 @@ namespace BanHang
             this.MainMenuStrip = commonMenu.MainMenu;
         }
 
-        private void LoadData()
+        private void LoadData(string keyword = "")
         {
             try
             {
                 using (var conn = DatabaseHelper.GetConnection())
-                using (var adapter = new SQLiteDataAdapter("SELECT * FROM KhachHang", conn))
                 {
-                    dt = new DataTable();
-                    adapter.Fill(dt);
-                    dgvKhachHang.DataSource = dt;
-
-                    if (dgvKhachHang.Columns.Contains("Id"))
+                    string query = @"SELECT * FROM KhachHang";
+                    if (!string.IsNullOrWhiteSpace(keyword))
                     {
-                        dgvKhachHang.Columns["Id"].Visible = false;
+                        query += " WHERE TenKhachHang LIKE @keyword OR DienThoai LIKE @keyword";
                     }
 
-                    if (dgvKhachHang.Columns.Contains("TrangThai"))
+                    using (var cmd = new SQLiteCommand(query, conn))
                     {
-                        dgvKhachHang.Columns["TrangThai"].Visible = false;
-                    }
+                        if (!string.IsNullOrWhiteSpace(keyword))
+                        {
+                            cmd.Parameters.AddWithValue("@keyword", "%" + keyword + "%");
+                        }
 
-                    var columnHeaders = new Dictionary<string, string>
+                        using (var adapter = new SQLiteDataAdapter(cmd))
+                        {
+                            dt = new DataTable();
+                            adapter.Fill(dt);
+                            dgvKhachHang.DataSource = dt;
+
+                            if (dgvKhachHang.Columns.Contains("Id"))
+                                dgvKhachHang.Columns["Id"].Visible = false;
+
+                            if (dgvKhachHang.Columns.Contains("TrangThai"))
+                                dgvKhachHang.Columns["TrangThai"].Visible = false;
+
+                            var columnHeaders = new Dictionary<string, string>
                     {
                         { "MaCode", "Mã Khách Hàng" },
                         { "TenKhachHang", "Tên Khách Hàng" },
@@ -105,13 +115,15 @@ namespace BanHang
                         { "NgayCapNhat", "Ngày Cập Nhật" }
                     };
 
-                    SetColumnHeaders(dgvKhachHang, columnHeaders);
+                            SetColumnHeaders(dgvKhachHang, columnHeaders);
 
-                    if (dgvKhachHang.Columns.Contains("NgayTao"))
-                        dgvKhachHang.Columns["NgayTao"].DefaultCellStyle.Format = "dd/MM/yyyy";
+                            if (dgvKhachHang.Columns.Contains("NgayTao"))
+                                dgvKhachHang.Columns["NgayTao"].DefaultCellStyle.Format = "dd/MM/yyyy";
 
-                    if (dgvKhachHang.Columns.Contains("NgayCapNhat"))
-                        dgvKhachHang.Columns["NgayCapNhat"].DefaultCellStyle.Format = "dd/MM/yyyy";
+                            if (dgvKhachHang.Columns.Contains("NgayCapNhat"))
+                                dgvKhachHang.Columns["NgayCapNhat"].DefaultCellStyle.Format = "dd/MM/yyyy";
+                        }
+                    }
                 }
             }
             catch (Exception ex)
@@ -119,6 +131,7 @@ namespace BanHang
                 MessageBox.Show("Lỗi khi load dữ liệu: " + ex.Message);
             }
         }
+
 
         private void LoadGioiTinh()
         {
@@ -333,6 +346,11 @@ namespace BanHang
             }
 
             return true;
+        }
+
+        private void btnSearch_Click(object sender, EventArgs e)
+        {
+            LoadData(txtSearch.Text);
         }
     }
 }

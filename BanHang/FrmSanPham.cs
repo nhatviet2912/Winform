@@ -95,71 +95,87 @@ namespace BanHang
             }
         }
 
-        private void LoadData()
+        private void LoadData(string keyword = "")
         {
-            var query = @"SELECT  
-SanPham.Id AS Id,  
-SanPham.MaSanPham,  
-SanPham.TenSanPham,  
-LoaiSanPham.TenLoai AS LoaiSanPhamTen,
-SanPham.MoTa AS MoTa,  
-SanPham.GiaBan,  
-SanPham.DonViTinh,  
-SanPham.ThuongHieu,  
-SanPham.XuatXu,  
-SanPham.NgayTao, 
-SanPham.LoaiSanPhamId, 
-SanPham.NgayCapNhat
-FROM SanPham
-LEFT JOIN LoaiSanPham 
-ON SanPham.LoaiSanPhamId = LoaiSanPham.Id";
-            using (var conn = DatabaseHelper.GetConnection())
-            using (var adapter = new SQLiteDataAdapter(query, conn))
+            try
             {
-                dt = new DataTable();
-                adapter.Fill(dt);
-                dgvSanPham.DataSource = dt;
-
-                if (dgvSanPham.Columns.Contains("Id"))
+                using (var conn = DatabaseHelper.GetConnection())
                 {
-                    dgvSanPham.Columns["Id"].Visible = false;
+                    var query = @"
+                        SELECT  
+                            SanPham.Id AS Id,  
+                            SanPham.MaSanPham,  
+                            SanPham.TenSanPham,  
+                            LoaiSanPham.TenLoai AS LoaiSanPhamTen,
+                            SanPham.MoTa AS MoTa,  
+                            SanPham.GiaBan,  
+                            SanPham.DonViTinh,  
+                            SanPham.ThuongHieu,  
+                            SanPham.XuatXu,  
+                            SanPham.NgayTao, 
+                            SanPham.LoaiSanPhamId, 
+                            SanPham.NgayCapNhat
+                        FROM SanPham
+                        LEFT JOIN LoaiSanPham 
+                            ON SanPham.LoaiSanPhamId = LoaiSanPham.Id
+                    ";
+
+                    if (!string.IsNullOrWhiteSpace(keyword))
+                    {
+                        query += " WHERE SanPham.TenSanPham LIKE @kw OR SanPham.MaSanPham LIKE @kw";
+                    }
+
+                    using (var adapter = new SQLiteDataAdapter(query, conn))
+                    {
+                        if (!string.IsNullOrWhiteSpace(keyword))
+                        {
+                            adapter.SelectCommand.Parameters.AddWithValue("@kw", "%" + keyword + "%");
+                        }
+
+                        dt = new DataTable();
+                        adapter.Fill(dt);
+                        dgvSanPham.DataSource = dt;
+
+                        if (dgvSanPham.Columns.Contains("Id"))
+                            dgvSanPham.Columns["Id"].Visible = false;
+
+                        if (dgvSanPham.Columns.Contains("LoaiSanPhamId"))
+                            dgvSanPham.Columns["LoaiSanPhamId"].Visible = false;
+
+                        var columnHeaders = new Dictionary<string, string>
+                        {
+                            { "MaSanPham", "Mã Sản Phẩm" },
+                            { "TenSanPham", "Tên Sản Phẩm" },
+                            { "MoTa", "Mô Tả" },
+                            { "GiaBan", "Giá Bán" },
+                            { "DonViTinh", "Đơn Vị Tính" },
+                            { "LoaiSanPhamTen", "Loại Sản Phẩm" },
+                            { "ThuongHieu", "Thương Hiệu" },
+                            { "XuatXu", "Xuất Xứ" },
+                            { "TrangThai", "Trạng Thái" },
+                            { "NgayTao", "Ngày Tạo" },
+                            { "NgayCapNhat", "Ngày Cập Nhật" }
+                        };
+
+                        SetColumnHeaders(dgvSanPham, columnHeaders);
+
+                        if (dgvSanPham.Columns.Contains("GiaBan"))
+                            dgvSanPham.Columns["GiaBan"].DefaultCellStyle.Format = "N0"; // 1,000,000
+
+                        if (dgvSanPham.Columns.Contains("NgayTao"))
+                            dgvSanPham.Columns["NgayTao"].DefaultCellStyle.Format = "dd/MM/yyyy";
+
+                        if (dgvSanPham.Columns.Contains("NgayCapNhat"))
+                            dgvSanPham.Columns["NgayCapNhat"].DefaultCellStyle.Format = "dd/MM/yyyy";
+
+                        // Gắn sự kiện để thêm " VNĐ"
+                        dgvSanPham.CellFormatting += dgvSanPham_CellFormatting;
+                    }
                 }
-
-                if (dgvSanPham.Columns.Contains("LoaiSanPhamId"))
-                {
-                    dgvSanPham.Columns["LoaiSanPhamId"].Visible = false;
-                }
-
-                var columnHeaders = new Dictionary<string, string>
-                {
-                    { "MaSanPham", "Mã Sản Phẩm" },
-                    { "TenSanPham", "Tên Sản Phẩm" },
-                    { "MoTa", "Mô Tả" },
-                    { "GiaBan", "Giá Bán" },
-                    { "DonViTinh", "Đơn Vị Tính" },
-                    { "LoaiSanPhamTen", "Loại Sản Phẩm" },
-                    { "ThuongHieu", "Thương Hiệu" },
-                    { "XuatXu", "Xuất Xứ" },
-                    { "TrangThai", "Trạng Thái" },
-                    { "NgayTao", "Ngày Tạo" },
-                    { "NgayCapNhat", "Ngày Cập Nhật" }
-                };
-
-                SetColumnHeaders(dgvSanPham, columnHeaders);
-
-                if (dgvSanPham.Columns.Contains("GiaBan"))
-                {
-                    dgvSanPham.Columns["GiaBan"].DefaultCellStyle.Format = "N0"; // 1,000,000
-                }
-
-                if (dgvSanPham.Columns.Contains("NgayTao"))
-                    dgvSanPham.Columns["NgayTao"].DefaultCellStyle.Format = "dd/MM/yyyy";
-
-                if (dgvSanPham.Columns.Contains("NgayCapNhat"))
-                    dgvSanPham.Columns["NgayCapNhat"].DefaultCellStyle.Format = "dd/MM/yyyy";
-
-                // Gắn sự kiện để thêm " VNĐ"
-                dgvSanPham.CellFormatting += dgvSanPham_CellFormatting;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi load dữ liệu: " + ex.Message);
             }
         }
 
@@ -394,6 +410,11 @@ ON SanPham.LoaiSanPhamId = LoaiSanPham.Id";
             }
 
             return true;
+        }
+
+        private void btnSeach_Click(object sender, EventArgs e)
+        {
+            LoadData(txtSearch.Text);
         }
     }
 }

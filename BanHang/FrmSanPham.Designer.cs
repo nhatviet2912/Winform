@@ -35,6 +35,9 @@
             btnThem = new Button();
             btnSua = new Button();
             btnXoa = new Button();
+            txtSearch = new TextBox();
+            label1 = new Label();
+            btnSeach = new Button();
             ((System.ComponentModel.ISupportInitialize)dgvSanPham).BeginInit();
             SuspendLayout();
             // 
@@ -208,9 +211,38 @@
             btnXoa.Text = "Xóa";
             btnXoa.UseVisualStyleBackColor = true;
             // 
+            // txtSearch
+            // 
+            txtSearch.Location = new Point(450, 220);
+            txtSearch.Name = "txtSearch";
+            txtSearch.Size = new Size(200, 27);
+            txtSearch.TabIndex = 20;
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new Point(362, 223);
+            label1.Name = "label1";
+            label1.Size = new Size(70, 20);
+            label1.TabIndex = 21;
+            label1.Text = "Tìm kiếm";
+            // 
+            // btnSeach
+            // 
+            btnSeach.Location = new Point(680, 220);
+            btnSeach.Name = "btnSeach";
+            btnSeach.Size = new Size(94, 29);
+            btnSeach.TabIndex = 22;
+            btnSeach.Text = "Tìm";
+            btnSeach.UseVisualStyleBackColor = true;
+            btnSeach.Click += btnSeach_Click;
+            // 
             // FrmSanPham
             // 
             ClientSize = new Size(830, 603);
+            Controls.Add(btnSeach);
+            Controls.Add(label1);
+            Controls.Add(txtSearch);
             Controls.Add(btnXoa);
             Controls.Add(btnSua);
             Controls.Add(btnThem);
@@ -263,5 +295,8 @@
         private System.Windows.Forms.Button btnThem;
         private System.Windows.Forms.Button btnSua;
         private System.Windows.Forms.Button btnXoa;
+        private TextBox txtSearch;
+        private Label label1;
+        private Button btnSeach;
     }
 }

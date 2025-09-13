@@ -8,7 +8,6 @@
         private System.Windows.Forms.Label lblNgayBan;
         private System.Windows.Forms.DateTimePicker dtpNgayBan;
         private System.Windows.Forms.Label lblKhachHangId;
-        private System.Windows.Forms.TextBox txtKhachHangId;
         private System.Windows.Forms.Label lblNhanVienBan;
         private System.Windows.Forms.TextBox txtNhanVienBan;
         private System.Windows.Forms.Label lblTongTien;
@@ -35,7 +34,6 @@
             lblNgayBan = new Label();
             dtpNgayBan = new DateTimePicker();
             lblKhachHangId = new Label();
-            txtKhachHangId = new TextBox();
             lblNhanVienBan = new Label();
             txtNhanVienBan = new TextBox();
             lblTongTien = new Label();
@@ -45,6 +43,8 @@
             btnLuuHoaDon = new Button();
             btnHuyHoaDon = new Button();
             btnThoat = new Button();
+            comboBox1 = new ComboBox();
+            btnPrint = new Button();
             ((System.ComponentModel.ISupportInitialize)dgvChiTiet).BeginInit();
             SuspendLayout();
             // 
@@ -88,13 +88,6 @@
             lblKhachHangId.Size = new Size(112, 20);
             lblKhachHangId.TabIndex = 4;
             lblKhachHangId.Text = "Mã khách hàng:";
-            // 
-            // txtKhachHangId
-            // 
-            txtKhachHangId.Location = new Point(136, 52);
-            txtKhachHangId.Name = "txtKhachHangId";
-            txtKhachHangId.Size = new Size(200, 27);
-            txtKhachHangId.TabIndex = 5;
             // 
             // lblNhanVienBan
             // 
@@ -147,7 +140,7 @@
             // 
             btnThemSanPham.Location = new Point(20, 340);
             btnThemSanPham.Name = "btnThemSanPham";
-            btnThemSanPham.Size = new Size(120, 30);
+            btnThemSanPham.Size = new Size(143, 30);
             btnThemSanPham.TabIndex = 11;
             btnThemSanPham.Text = "Thêm sản phẩm";
             btnThemSanPham.UseVisualStyleBackColor = true;
@@ -169,7 +162,7 @@
             btnHuyHoaDon.Name = "btnHuyHoaDon";
             btnHuyHoaDon.Size = new Size(80, 30);
             btnHuyHoaDon.TabIndex = 13;
-            btnHuyHoaDon.Text = "Hủy";
+            btnHuyHoaDon.Text = "Xóa";
             btnHuyHoaDon.UseVisualStyleBackColor = true;
             btnHuyHoaDon.Click += btnHuyHoaDon_Click;
             // 
@@ -183,15 +176,34 @@
             btnThoat.UseVisualStyleBackColor = true;
             btnThoat.Click += btnThoat_Click;
             // 
+            // comboBox1
+            // 
+            comboBox1.FormattingEnabled = true;
+            comboBox1.Location = new Point(136, 55);
+            comboBox1.Name = "comboBox1";
+            comboBox1.Size = new Size(200, 28);
+            comboBox1.TabIndex = 15;
+            // 
+            // btnPrint
+            // 
+            btnPrint.Location = new Point(300, 340);
+            btnPrint.Name = "btnPrint";
+            btnPrint.Size = new Size(94, 29);
+            btnPrint.TabIndex = 16;
+            btnPrint.Text = "In Hóa Đơn";
+            btnPrint.UseVisualStyleBackColor = true;
+            btnPrint.Click += btnPrint_Click;
+            // 
             // FrmBanHang
             // 
             ClientSize = new Size(700, 453);
+            Controls.Add(btnPrint);
+            Controls.Add(comboBox1);
             Controls.Add(lblMaHoaDon);
             Controls.Add(txtMaHoaDon);
             Controls.Add(lblNgayBan);
             Controls.Add(dtpNgayBan);
             Controls.Add(lblKhachHangId);
-            Controls.Add(txtKhachHangId);
             Controls.Add(lblNhanVienBan);
             Controls.Add(txtNhanVienBan);
             Controls.Add(lblTongTien);
@@ -208,5 +220,7 @@
             ResumeLayout(false);
             PerformLayout();
         }
+        private ComboBox comboBox1;
+        private Button btnPrint;
     }
 }
